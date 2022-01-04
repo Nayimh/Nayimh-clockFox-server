@@ -20,7 +20,7 @@ async function run() {
     try {
         await client.connect();
         const database = client.db('clockFox');
-        const productCollection = database.collection('products');
+        const watchCollection = database.collection('products');
         const orderCollection = database.collection('orders');
         const ratingCollection = database.collection('reviews');
         const usersCollection = database.collection('users');
@@ -30,13 +30,13 @@ async function run() {
         // post data from ui to db
         app.post('/products', async (req, res) => {
             const data = req.body;
-            const result = await productCollection.insertOne(data);
+            const result = await watchCollection.insertOne(data);
             res.json(result);
         })
 
         // get data from db to ui
         app.get('/products', async (req, res) => {
-            const data = productCollection.find({});
+            const data = watchCollection.find({});
             const result = await data.toArray();
             res.json(result);
         })
@@ -45,7 +45,7 @@ async function run() {
         app.get('/products/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const watch = await productCollection.findOne(query);
+            const watch = await watchCollection.findOne(query);
             res.json(watch);
         })
 
@@ -56,7 +56,7 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const option = { upsert: true };
             const updateDoc = { $set: { updateProduct } };
-            const result = await productCollection.updateOne(query, updateDoc, option);
+            const result = await watchCollection.updateOne(query, updateDoc, option);
             res.json(result);
         })
 
@@ -66,7 +66,7 @@ async function run() {
         app.delete('/products/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const remove = await productCollection.deleteOne(query);
+            const remove = await watchCollection.deleteOne(query);
             res.json(remove);
         })
 
@@ -109,6 +109,17 @@ async function run() {
             res.json(order);
         })
 
+          // get order by email filter
+          app.get('/orders/:email', async (req, res) => {
+            const email = req?.params?.email;
+            const cursor = orderCollection.find({});
+            const orders = await cursor.toArray();
+            const customerOrder = orders.filter(order => order?.email === email);
+            res.send(customerOrder);
+        })
+
+        
+
         // get / load orders from db to ui
         app.get('/orders', async (req, res) => {
             const data = req.body;
@@ -116,6 +127,8 @@ async function run() {
             const result = await orders.toArray();
             res.json(result);
         })
+
+       
 
         // get a single products from db
         app.get('/orders/:id', async (req, res) => {
@@ -125,14 +138,32 @@ async function run() {
             res.json(order);
         })
 
-        // get order by email filter
-        app.get('/orders/:email', async (req, res) => {
-            const email = req.params.email;
-            const cursor = orderCollection.find({});
-            const orders = await cursor.toArray();
-            const customerOrder = orders.filter(order => order.email === email);
-            res.json(customerOrder);
-        })
+      
+
+        // app.get('/orders', async (req, res) => {
+        //     const email = req.query.email;
+        //     const query = { email: email };
+        //     const cursor = orderCollection.find(query);
+        //     const orders = await cursor.toArray();
+        //     res.json(orders);
+        // })
+        // app.get('/orders', async (req, res) => {
+        //     const allOrders = ordersCollection.find({});
+        //     const orders = await allOrders.toArray();
+
+        //     // MyOrders.js => query-order
+        //     const myOrder = req.query.email;
+        //     const queryMyOrder = { email: myOrder };
+        //     const myOrderInfo = await orderCollection.find(queryMyOrder).toArray();
+
+        //     res.send({
+        //         orders,
+        //         myOrderInfo
+        //     });
+        // })
+
+       
+
 
         // update booking status
         app.put('/orders/:id', async (req, res) => {
@@ -153,6 +184,10 @@ async function run() {
             const remove = await orderCollection.deleteOne(query);
             res.json(remove);
         })
+
+
+
+        
 
         // ---------------user section ----------
         // post user from ui to db
