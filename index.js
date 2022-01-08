@@ -140,28 +140,6 @@ async function run() {
 
       
 
-        // app.get('/orders', async (req, res) => {
-        //     const email = req.query.email;
-        //     const query = { email: email };
-        //     const cursor = orderCollection.find(query);
-        //     const orders = await cursor.toArray();
-        //     res.json(orders);
-        // })
-        // app.get('/orders', async (req, res) => {
-        //     const allOrders = ordersCollection.find({});
-        //     const orders = await allOrders.toArray();
-
-        //     // MyOrders.js => query-order
-        //     const myOrder = req.query.email;
-        //     const queryMyOrder = { email: myOrder };
-        //     const myOrderInfo = await orderCollection.find(queryMyOrder).toArray();
-
-        //     res.send({
-        //         orders,
-        //         myOrderInfo
-        //     });
-        // })
-
        
 
 
